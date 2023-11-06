@@ -47,6 +47,12 @@ void UBluEye::Init()
 		UE_LOG(LogBlu, Log, TEXT("Can't initialize when Width or Height are <= 0"));
 		return;
 	}
+	
+	uint16 DebugPort;
+	if(FParse::Value(FCommandLine::Get(), TEXT("cefdebug="), DebugPort))
+	{
+		// BrowserSettings.remote_debugging_port = DebugPort;
+	}
 
 	BrowserSettings.universal_access_from_file_urls = STATE_ENABLED;
 	BrowserSettings.file_access_from_file_urls = STATE_ENABLED;
@@ -255,6 +261,10 @@ void UBluEye::LoadURL(const FString& newURL)
 
 	// Load as usual
 	Browser->GetMainFrame()->LoadURL(*FinalUrl);
+
+
+	// TODO
+	// Browser->GetMainFrame()->LoadString();
 
 }
 

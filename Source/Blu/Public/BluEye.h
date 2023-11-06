@@ -65,7 +65,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	void ExecuteJS(const FString& code);
 
-	/** 
+	/**
 	 * Execute a JS function/method by name with FString Array as params.
 	 * Each element in the array will be passed into the function in order and separated by a ,
 	 * If you want to pass a JSON string as an object, simply don't put quotes around the outside braces {"foo" : "bar"}
@@ -215,21 +215,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	static void SetShouldTickEventLoop(bool ShouldTick = true);
 
+	CefRefPtr<CefBrowser> Browser;
+
 protected:
 
 	CefWindowInfo Info;
 	CefRefPtr<BrowserClient> ClientHandler;
 	CefBrowserSettings BrowserSettings;
 	RenderHandler* Renderer;
-	CefRefPtr<CefBrowser> Browser;
-	
+
 	CefMouseEvent MouseEvent;
 	CefKeyEvent KeyEvent;
 
 	void ResetTexture();
 	void DestroyTexture();
 	void ResetMatInstance();
-		
+
 	// Parse UE4 key events, helper
 	void ProcessKeyCode(FKeyEvent InKey);
 
