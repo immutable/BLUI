@@ -79,6 +79,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Blu")
 	void LoadURL(const FString& newURL);
 
+	/** Load a new URL with headers into the browser */
+	UFUNCTION(BlueprintCallable, Category = "Blu")
+	void LoadURLWithHeaders(const FString& newURL, TMap<FString, FString> headers);
+
 	/** Get the currently loaded URL */
 	UFUNCTION(BlueprintPure, Category = "Blu")
 	FString GetCurrentURL();
@@ -133,6 +137,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FLogEvent LogEventEmitter;
+
+	UPROPERTY(BlueprintAssignable)
+	FUrlChangeEvent UrlChangeEventEmitter;
 
 	/** Trigger a key down event */
 	UFUNCTION(BlueprintCallable, Category = "Blu")

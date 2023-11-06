@@ -34,6 +34,7 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 	private:
 		FScriptEvent* EventEmitter;
 		FLogEvent* LogEmitter;
+	    FUrlChangeEvent * UrlChangeEmitter;
 		CefRefPtr<RenderHandler> RenderHandlerRef;
 
 		// For lifespan
@@ -69,6 +70,11 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 			return this; 	
 		}
 
+		virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override
+		{
+			return this;
+		}
+
 		virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> Browser, 
 			CefRefPtr<CefFrame> Frame,
 			CefProcessId SourceProcess, 
@@ -82,6 +88,7 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 
 		void SetEventEmitter(FScriptEvent* Emitter);
 		void SetLogEmitter(FLogEvent* Emitter);
+	    void SetUrlChangeEmitter(FUrlChangeEvent* Emitter);
 
 		//CefDownloadHandler
 		virtual void OnBeforeDownload(
@@ -123,7 +130,9 @@ class BrowserClient : public CefClient, public CefLifeSpanHandler, public CefDow
 
 		virtual void OnFullscreenModeChange(CefRefPtr< CefBrowser > Browser, bool Fullscreen) override;
 
-		virtual void OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefString& Title);
+		virtual void OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefString& Title) override;
+
+	    virtual void OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) override;
 
 		CefRefPtr<CefBrowser> GetCEFBrowser();
 

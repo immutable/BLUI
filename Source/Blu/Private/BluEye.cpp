@@ -96,6 +96,7 @@ void UBluEye::Init()
 	// Setup JS event emitter
 	ClientHandler->SetEventEmitter(&ScriptEventEmitter);
 	ClientHandler->SetLogEmitter(&LogEventEmitter);
+	ClientHandler->SetUrlChangeEmitter(&UrlChangeEventEmitter);
 
 	UE_LOG(LogBlu, Log, TEXT("Component Initialized"));
 	UE_LOG(LogBlu, Log, TEXT("Loading URL: %s"), *DefaultURL);
@@ -267,6 +268,66 @@ void UBluEye::LoadURL(const FString& newURL)
 	// Browser->GetMainFrame()->LoadString();
 
 }
+
+void UBluEye::LoadURLWithHeaders(const FString& newURL, TMap<FString, FString> headers)
+{
+	FString FinalUrl = newURL;
+
+	//Detect chrome-devtools, and re-target them to regular devtools
+	if (newURL.Contains(TEXT("chrome-devtools://devtools")))
+	{
+		//devtools://devtools/inspector.html?v8only=true&ws=localhost:9229
+		//browser->GetHost()->ShowDevTools(info, g_handler, browserSettings, CefPoint());
+		FinalUrl = FinalUrl.Replace(TEXT("chrome-devtools://devtools/bundled/inspector.html"), TEXT("devtools://devtools/inspector.html"));
+	}
+
+	// Check if we want to load a local file
+	if (newURL.Contains(TEXT("blui://"), ESearchCase::IgnoreCase, ESearchDir::FromStart))
+	{
+
+		// Get the current working directory
+		FString GameDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+
+		// We're loading a local file, so replace the proto with our game directory path
+		FString LocalFile = newURL.Replace(TEXT("blui://"), *GameDir, ESearchCase::IgnoreCase);
+
+		// Now we use the file proto
+		LocalFile = FString(TEXT("file:///")) + LocalFile;
+
+		UE_LOG(LogBlu, Log, TEXT("Load Local File: %s"), *LocalFile)
+
+		// Load it up
+		Browser->GetMainFrame()->LoadURL(*LocalFile);
+
+		return;
+
+	}
+
+	// Create headers to CEF specs
+	CefRefPtr<CefRequest> request = CefRequest::Create();
+	request->SetURL(*FinalUrl);
+
+	// Initialize a CefRequest::HeaderMap
+	CefRequest::HeaderMap headerMap;
+
+	// Iterate through the incoming TMap and populate the CefRequest::HeaderMap
+	for (const auto& Pair : headers)
+	{
+		const FString& Key = Pair.Key;
+		const FString& Value = Pair.Value;
+
+		// Convert FString to CefString if necessary
+		CefString CefKey = CefString(TCHAR_TO_UTF8(*Key));
+		CefString CefValue = CefString(TCHAR_TO_UTF8(*Value));
+
+		// Add key-value pair to the CefRequest::HeaderMap
+		headerMap.insert(std::make_pair(CefKey, CefValue));
+	}
+
+	Browser->GetMainFrame()->LoadRequest(request);
+
+}
+
 
 FString UBluEye::GetCurrentURL()
 {

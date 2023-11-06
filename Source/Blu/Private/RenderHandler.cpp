@@ -71,6 +71,13 @@ void BrowserClient::OnTitleChange(CefRefPtr< CefBrowser > Browser, const CefStri
 	LogEmitter->Broadcast(TitleMessage);
 }
 
+void BrowserClient::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url)
+{
+	UE_LOG(LogTemp, Log, TEXT("URL changed"));
+	FString AddressMessage = FString(url.c_str());
+	UrlChangeEmitter->Broadcast(AddressMessage);
+}
+
 CefRefPtr<CefBrowser> BrowserClient::GetCEFBrowser()
 {
 	return BrowserRef;
@@ -129,6 +136,12 @@ void BrowserClient::SetLogEmitter(FLogEvent* Emitter)
 {
 	this->LogEmitter = Emitter;
 }
+
+void BrowserClient::SetUrlChangeEmitter(FUrlChangeEvent* Emitter)
+{
+	this->UrlChangeEmitter = Emitter;
+}
+
 
 void BrowserClient::OnBeforeDownload(
 	CefRefPtr<CefBrowser> Browser,
