@@ -269,11 +269,6 @@ void UBluEye::LoadURL(const FString& newURL)
 
 }
 
-
-/*
-* Needs to be used AFTER LoadURL to prevent rpc INVALID_INITIATOR_ORIGIN error
-* see: cef_frame.h
-*/
 void UBluEye::LoadURLWithHeaders(const FString& newURL, TMap<FString, FString> headers)
 {
 	FString FinalUrl = newURL;
@@ -329,6 +324,12 @@ void UBluEye::LoadURLWithHeaders(const FString& newURL, TMap<FString, FString> h
 		headerMap.insert(std::make_pair(CefKey, CefValue));
 	}
 
+    Browser->GetMainFrame()->LoadURL(*FinalUrl);
+
+    /*
+     * Needs to be used AFTER LoadURL to prevent rpc INVALID_INITIATOR_ORIGIN error
+     * see: cef_frame.h
+    */
 	Browser->GetMainFrame()->LoadRequest(request);
 
 }
