@@ -323,8 +323,9 @@ void UBluEye::LoadURLWithHeaders(const FString& newURL, TMap<FString, FString> h
 		// Add key-value pair to the CefRequest::HeaderMap
 		headerMap.insert(std::make_pair(CefKey, CefValue));
 	}
-
 	Browser->GetMainFrame()->LoadURL(*FinalUrl);
+
+	request->SetHeaderMap(headerMap);
 
     /*
      * Needs to be used AFTER LoadURL to prevent rpc INVALID_INITIATOR_ORIGIN error
